@@ -174,14 +174,17 @@ int32_t ehIgual(int32_t x, int32_t y) {
 int32_t limpaBitN(int32_t x, int8_t n) {
     /*
     * Para explicar, comecemos do AND, para se transformar um número em zero é necessário usar AND com zeros,
-    para isso bastaria utilizar (x & 0), porém o zero precisa estar somente na posição escolhida 
-    isto é, na posição n precisa ter um zero.
-    Para conseguir algo numa posição especifica, dada pelo usuário, precisamos usar o SHIFT,
-    a partir do enésimo bit efetuamos um shift pra esquerda, 
-    já que ele vai modificar os bits a partir do LSB, temos então x & (0 « n)
-    porém isto não funciona, já que o zero é 0000 e o shift neste resultado apenas transformaria tudo em zero,
-    então adicionamos o 1, para movê-lo do LSB para esquerda, 
-    sendo possível assim adicionar o zero apenas aonde o usuário quer e inverter o restante no complemento.
+    * para isso bastaria utilizar (x & 0), porém o zero precisa estar somente na posição escolhida 
+    * isto é, na posição n precisa ter um zero.
+    * Para conseguir algo numa posição especifica, dada pelo usuário, precisamos usar o SHIFT,
+    * a partir do enésimo bit efetuamos um shift pra esquerda, 
+    * já que ele vai modificar os bits a partir do LSB, temos então x & (0 « n)
+    * porém isto não funciona, já que o zero é 0000 e o shift neste resultado apenas transformaria tudo em zero,
+    * e neste caso não adiantaria. No lugar do zero utilizaremos então o 1, 
+    * deslocando ele em n posições para a esquerda, a partir do LSB. 
+    * Com isso, teremos um binário com o bit 1 na posição que queremos transformar em 0. 
+    * Para completar, fazemos o complemento a 2 desse binário, de forma que ele seja todo de 1 
+    * e que tenha um bit 0 apenas onde queremos."
     */
     return x & (~(1 << n));
 }
@@ -213,7 +216,13 @@ int32_t limpaBitN(int32_t x, int8_t n) {
  *
  */
 int32_t bitEmP(int32_t x, uint8_t p) {
-    return -1;
+    /*
+    * Primeiramente, para dizer se um bit é 1 ou 0, a melhor forma de fazer isso é fazer um AND com o 1,
+    * (entendendo que se o bit for 0 & 1 = o retorno vai ser 0, e se o bit for 1 & 1 = o retorno vai ser 1)
+    * A partir disso, precisamos que o bit que queremos descobrir o valor, fique na posição 1, 
+    * ou seja, que ele fique no bit LSB, para isso podemos fazer um shift para a direita de p posições" 
+    */
+    return (x >> p) & 1;
 }
 
 /*
