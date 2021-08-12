@@ -121,7 +121,7 @@ int32_t bitwiseAnd(int32_t x, int32_t y) {
     * eu chegaria exatamente ao inverso do resultado esperado,
     *    (~1 | ~2) => (~0001 | ~0010) => (1110 | 1101) => 1111
     * ou seja, precisaria fazer mais um complemento do resultado anterior ~((~x) | (~y)).
-    *    ~(~1 | ~2 ) => ~(1111) => 0000
+    *    ~(~1 | ~2) => ~(1111) => 0000
     *
     * O uso desse exemplo pode ser comprovado também a partir de uma lei de DeMorgan, que diz que,
     * ~(a & b) = ~a | ~b , reorganizando o ~ temos que, (a & b) = ~(~a | ~b).
@@ -143,7 +143,18 @@ int32_t bitwiseAnd(int32_t x, int32_t y) {
  *          ehIgual(16, 8) -> 0
  */
 int32_t ehIgual(int32_t x, int32_t y) {
-    return -1;
+    /*
+    * Na operação XOR (ou-exclusivo) temos que se um número for exatamente igual ao outro, o retorno é 0.
+    * Uma demonstração é: 
+    *   8 ^ 8 => 1000 ^ 1000 => 0000
+    *   1 ^ 8 => 0001 ^ 1000 => 1111
+    * 
+    * Portanto, se nessa operação o resultado é sempre zero quando o número é comparado com ele mesmo, 
+    * para resolver a questão precisamos exibir "1" para os números iguais, 
+    * e como o XOR retorna apenas zero para números iguais, 
+    * precisamos usar a operação ! no resultado anterior, para obter a solução correta.
+    */
+    return !(x ^ y);
 }
 
 /* Limpa bit n
