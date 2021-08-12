@@ -183,7 +183,7 @@ int32_t limpaBitN(int32_t x, int8_t n) {
     * e neste caso não adiantaria. No lugar do zero utilizaremos então o 1, 
     * deslocando ele em n posições para a esquerda, a partir do LSB. 
     * Com isso, teremos um binário com o bit 1 na posição que queremos transformar em 0. 
-    * Para completar, fazemos o complemento a 2 desse binário, de forma que ele seja todo de 1 
+    * Para finalizar, fazemos o complemento a 2 desse binário, de forma que ele seja todo de 1 
     * e que tenha um bit 0 apenas onde queremos."
     */
     return x & (~(1 << n));
@@ -248,7 +248,18 @@ int32_t bitEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t byteEmP(int32_t x, uint8_t p) {
-    return -1;
+    /*
+    * Analoga às funções anteriores, só que desta vez trabalhando com byte, 
+    * faremos um AND com 0xFF para pegar o valor do byte correspondente, 
+    * mas antes de fazer essa operação, precisamos deslocar o byte que queremos para a posição do LSB, 
+    * isto é, 0xFF.
+    * Como queremos o valor de um byte, que equivale a 8 bits, e o shift é feito de bit a bit, 
+    * precisamos multiplicar o valor da posição do byte por 8, 
+    * para isso faremos um shift de 3 posições para esquerda no valor de p, (p << 3), 
+    * que equivale a p * 2^3, de forma que o shift a direita que faremos no final
+    * seja multiplicado por 8, já que estamos trabalhando com bytes.
+    */
+    return (x >> (p << 3)) & 0xFF;
 }
 
 /*
