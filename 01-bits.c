@@ -172,7 +172,18 @@ int32_t ehIgual(int32_t x, int32_t y) {
  *          limpaBitN(3, 1) -> 1
  */
 int32_t limpaBitN(int32_t x, int8_t n) {
-    return -1;
+    /*
+    * Para explicar, comecemos do AND, para se transformar um número em zero é necessário usar AND com zeros,
+    para isso bastaria utilizar (x & 0), porém o zero precisa estar somente na posição escolhida 
+    isto é, na posição n precisa ter um zero.
+    Para conseguir algo numa posição especifica, dada pelo usuário, precisamos usar o SHIFT,
+    a partir do enésimo bit efetuamos um shift pra esquerda, 
+    já que ele vai modificar os bits a partir do LSB, temos então x & (0 « n)
+    porém isto não funciona, já que o zero é 0000 e o shift neste resultado apenas transformaria tudo em zero,
+    então adicionamos o 1, para movê-lo do LSB para esquerda, 
+    sendo possível assim adicionar o zero apenas aonde o usuário quer e inverter o restante no complemento.
+    */
+    return x & (~(1 << n));
 }
 
 /*
