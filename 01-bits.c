@@ -17,43 +17,85 @@
 #include <stdint.h>
 
 
-/*
-Como números pares representados em forma binária, sempre terminam com 0 e os ímpares terminam em 1,
-se fizermos uma operação & bit-a-bit com o número binário 0001 (equivalente a 0x1), 
-para todos os pares obteremos como resultado 0 e para todos os ímpares
-teremos 1. Portanto como a questão pede o contrário, se fizermos um ^ 
-para o resultado da operação anterior juntamente ao binário 0001 (equivalente a 0x1), 
-obteremos o contrário da operação. 
-Dessa forma, teremos o resultado final esperado, retornando 0 para números ímpares e 1 para números pares.
-*/
+/* Número é par ou não
+ *      Permitido:
+ *          Operações: ~ & ^ | << >>
+ *
+ *      Número máximo de operações: 3
+ *      Monitor: 2
+ *
+ *      Retorna 1 se x é par, retorna 0 caso contrário
+ *
+ *      Exemplo:
+ *          ehPar(0) -> 1
+ *          ehPar(2) -> 1
+ *          ehPar(7) -> 0
+ */
 int32_t ehPar(int32_t x) {
+    /*
+    * Como números pares representados em forma binária, sempre terminam com 0 e os ímpares terminam em 1,
+    * se fizermos uma operação & bit-a-bit com o número binário 0001 (equivalente a 0x1), 
+    * para todos os pares obteremos como resultado 0 e para todos os ímpares
+    * teremos 1. Portanto como a questão pede o contrário, se fizermos um ^ 
+    * para o resultado da operação anterior juntamente ao binário 0001 (equivalente a 0x1), 
+    * obteremos o contrário da operação. 
+    * Dessa forma, teremos o resultado final esperado, retornando 0 para números ímpares e 1 para números pares.
+    */   
     return ((x & 0x1) ^ 0x1);
 }
 
- /*
- Primeiramente resolvi testar como funciona o resto da divisão por 8 de alguns números, 
- na tentativa de achar um padrão. Fazendo isso, percebi que, começando do zero, 
- os restos da divisão de um numero por 8, vão sempre de 0 até 7.
- Ao fazer isso, percebi que os restos equivalem aos 3 LSB do número que está sendo dividido pelo 8,
- Para pegar esses 3 LSB do número, eu faço a operação (x & 0x7) já que 7 em binário equivale a 0111.
-
-Exemplo do que eu observei sobre os LSB:
-    1 % 8 = 1 | 0001 % 1000 = 0001
-    4 % 8 = 4 | 0100 % 1000 = 0100
-    7 % 8 = 7 | 0111 % 1000 = 0111
-    8 % 8 = 0 | 1000 % 1000 = 0000
+/*
+ * Módulo 8
+ *      Permitido:
+ *          Operações: ~ & ^ | ! << >>
+ *
+ *      Número máximo de operações: 3
+ *      Monitor: 1
+ *
+ *      Retorna x % 8
+ *
+ *      Exemplo:
+ *          mod8(1) -> 1
+ *          mod8(7) -> 7
+ *          mod8(10) -> 2
  */
 int32_t mod8(int32_t x) {
+    /*
+    * Primeiramente resolvi testar como funciona o resto da divisão por 8 de alguns números, 
+    * na tentativa de achar um padrão. Fazendo isso, percebi que, começando do zero, 
+    * os restos da divisão de um numero por 8, vão sempre de 0 até 7.
+    * Ao fazer isso, percebi que os restos equivalem aos 3 LSB do número que está sendo dividido pelo 8,
+    * Para pegar esses 3 LSB do número, eu faço a operação (x & 0x7) já que 7 em binário equivale a 0111.
+
+    * Exemplo do que eu observei sobre os LSB:
+    *    1 % 8 = 1 | 0001 % 1000 = 0001
+    *    4 % 8 = 4 | 0100 % 1000 = 0100
+    *    7 % 8 = 7 | 0111 % 1000 = 0111
+    *    8 % 8 = 0 | 1000 % 1000 = 0000
+    */
     return (x & 0x7);
 }
 
-/* 
-Através do conhecimento de que, o complemento de um número é igual ao negativo dele subtraído de 1, 
-ou seja (~x = (-x) - 1), organizando esta equação de lado temos então que, ~(x) + 1 = (-x), que significa
-que o complemento de um número adicionado de 1 é igual ao seu negativo. 
-Isto resolve esta questão portanto, já que ~x + 1 = negativo.
+/* Negativo sem -
+ *      Permitido:
+ *          Operações: ~ & ^ | ! << >> +
+ *
+ *      Número máximo de operações: 5
+ *      Monitor: 2
+ *
+ *      Retorna -x
+ *
+ *      Exemplo:
+ *          negativo(1) -> -1
+ *          negativo(42) -> -42
  */
 int32_t negativo(int32_t x) {
+    /* 
+    * Através do conhecimento de que, o complemento de um número é igual ao negativo dele subtraído de 1, 
+    * ou seja (~x = (-x) - 1), organizando esta equação de lado temos então que, ~(x) + 1 = (-x), que significa
+    * que o complemento de um número adicionado de 1 é igual ao seu negativo. 
+    * Isto resolve esta questão portanto, já que ~x + 1 = negativo.
+    */
     return (~x + 1);
 }
 
@@ -73,7 +115,18 @@ int32_t negativo(int32_t x) {
  *              11 & 1011 -> 0011
  */
 int32_t bitwiseAnd(int32_t x, int32_t y) {
-    return -1;
+    /*
+    * Tomando como exemplo (1 & 2) = 0000.
+    * Testando a operação de complemento a dois, percebi que se fizesse (~x | ~y), 
+    * eu chegaria exatamente ao inverso do resultado esperado,
+    *    (~1 | ~2) => (~0001 | ~0010) => (1110 | 1101) => 1111
+    * ou seja, precisaria fazer mais um complemento do resultado anterior ~((~x) | (~y)).
+    *    ~(~1 | ~2 ) => ~(1111) => 0000
+    *
+    * O uso desse exemplo pode ser comprovado também a partir de uma lei de DeMorgan, que diz que,
+    * ~(a & b) = ~a | ~b , reorganizando o ~ temos que, (a & b) = ~(~a | ~b).
+    */
+    return ~((~x) | (~y));
 }
 
 /* Igual sem ==
